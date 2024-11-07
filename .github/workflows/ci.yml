@@ -34,14 +34,12 @@ jobs:
           fi
 
       - name: Upload Cypress Test Log
-        if: failure()
         uses: actions/upload-artifact@v4.4.3
         with:
           name: cypress-test-log
           path: cypress-test-log.txt
 
       - name: Upload Cypress Screenshots
-        if: failure()
         uses: actions/upload-artifact@v4.4.3
         with:
           name: cypress-screenshots
@@ -49,7 +47,6 @@ jobs:
           if-no-files-found: ignore
 
       - name: List Cypress Folder
-        if: failure()
         run: |
           if [ -d "cypress/videos" ]; then
             ls -la cypress/videos
@@ -58,7 +55,6 @@ jobs:
           fi
 
       - name: Upload Cypress Videos
-        if: failure()
         uses: actions/upload-artifact@v4.4.3
         with:
           name: cypress-videos
@@ -66,7 +62,6 @@ jobs:
           if-no-files-found: ignore
 
       - name: Manage Cypress Logs (limit to 100)
-        if: failure()
         run: |
           LOG_DIR="cypress/reports"
           LOG_LIMIT=100
@@ -91,7 +86,6 @@ jobs:
           fi
 
       - name: Manage Cypress Screenshots (limit to 100)
-        if: failure()
         run: |
           SCREENSHOT_DIR="cypress/screenshots"
           SCREENSHOT_LIMIT=100
@@ -116,7 +110,6 @@ jobs:
           fi
 
       - name: Manage Cypress Videos (limit to 100)
-        if: failure()
         run: |
           VIDEO_DIR="cypress/videos"
           VIDEO_LIMIT=100
@@ -141,7 +134,6 @@ jobs:
           fi
 
       - name: Generate Cypress Success Report
-        if: success()
         run: |
           echo "Todos os testes Cypress passaram com sucesso em $(date)" > cypress-success-report.txt
           echo "\nComando de Execução: npm run test\n" >> cypress-success-report.txt
@@ -160,7 +152,6 @@ jobs:
             echo "Nenhum relatório de teste Cypress foi encontrado" >> cypress-success-report.txt
 
       - name: Upload Cypress Success Report
-        if: success()
         uses: actions/upload-artifact@v4.4.3
         with:
           name: cypress-success-report
