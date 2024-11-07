@@ -138,3 +138,23 @@ jobs:
           else
             echo "Pasta $VIDEO_DIR não encontrada."
           fi
+
+      - name: Generate Success Report
+        if: success()
+        run: |
+          echo "Todos os testes Cypress passaram com sucesso em $(date)" > cypress-success-report.txt
+          echo "" >> cypress-success-report.txt
+          echo "Detalhes dos Testes:" >> cypress-success-report.txt
+          
+          if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports)" ]; then
+            cat cypress/reports/*.json >> cypress-success-report.txt
+          else
+            echo "Nenhum relatório de teste Cypress foi encontrado" >> cypress-success-report.txt
+          fi
+  
+      - name: Upload Success Report
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-success-report
+          path: cypress-success-report.txt
