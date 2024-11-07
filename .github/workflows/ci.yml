@@ -1,23 +1,134 @@
-name: End-to-end tests
+name: Cypress Tests
+
 on: push
+
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cypress/reports
-          path: cypress/reports
-          if-no-files-found: ignore 
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Fix Cypress Permissions
+        run: chmod +x ./node_modules/.bin/cypress
+
+      - name: Install Cypress
+        run: npx cypress install
+
+      - name: Run Cypress Tests
+        run: npm run test | tee cypress-output.txt || true
+
+      - name: Test Command to Create Log
+        run: |
+          echo "Test failed at $(date)" > cypress-test-log.txt
+          echo "Error details:" >> cypress-test-log.txt
           
-      - uses: actions/upload-artifact@v4
+          if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports/*.json 2>/dev/null)" ]; then
+            echo "Cypress test reports found." >> cypress-test-log.txt
+            cat cypress/reports/*.json >> cypress-test-log.txt
+          else
+            echo "No Cypress reports found" >> cypress-test-log.txt
+          fi
+
+      - name: Upload Cypress Test Log
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: cypress-test-log
+          path: cypress-test-log.txt
+
+      - name: Upload Cypress Screenshots
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      - name: List Cypress Folder
+        run: |
+          if [ -d "cypress/videos" ]; then
+            ls -la cypress/videos
+          else
+            echo "Pasta cypress/videos não encontrada."
+          fi
+
+      - name: Upload Cypress Videos
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: cypress-videos
           path: cypress/videos
           if-no-files-found: ignore
+
+      - name: Manage Cypress Logs (limit to 100)
+        run: |
+          LOG_DIR="cypress/reports"
+          LOG_LIMIT=100
+          
+          if [ -d "$LOG_DIR" ]; then
+            LOG_COUNT=$(find "$LOG_DIR" -type f | wc -l)
+
+            echo "Número de logs na pasta: $LOG_COUNT"
+
+            if [ $LOG_COUNT -gt $LOG_LIMIT ]; then
+              FILES_TO_DELETE=$(find "$LOG_DIR" -type f -print0 | xargs -0 ls -t | tail -n +$(($LOG_LIMIT + 1)))
+
+              for FILE in $FILES_TO_DELETE; do
+                echo "Deleting log file $FILE due to log limit"
+                rm "$FILE"
+              done
+            else
+              echo "Número de logs está dentro do limite."
+            fi
+          else
+            echo "Pasta $LOG_DIR não encontrada."
+          fi
+
+      - name: Manage Cypress Screenshots (limit to 100)
+        run: |
+          SCREENSHOT_DIR="cypress/screenshots"
+          SCREENSHOT_LIMIT=100
+
+          if [ -d "$SCREENSHOT_DIR" ]; then
+            SCREENSHOT_COUNT=$(find "$SCREENSHOT_DIR" -type f | wc -l)
+
+            echo "Número de screenshots na pasta: $SCREENSHOT_COUNT"
+
+            if [ $SCREENSHOT_COUNT -gt $SCREENSHOT_LIMIT ]; then
+              FILES_TO_DELETE=$(find "$SCREENSHOT_DIR" -type f -print0 | xargs -0 ls -t | tail -n +$(($SCREENSHOT_LIMIT + 1)))
+
+              for FILE in $FILES_TO_DELETE; do
+                echo "Deleting screenshot $FILE due to screenshot limit"
+                rm "$FILE"
+              done
+            else
+              echo "Número de screenshots está dentro do limite."
+            fi
+          else
+            echo "Pasta $SCREENSHOT_DIR não encontrada."
+          fi
+
+      - name: Manage Cypress Videos (limit to 100)
+        run: |
+          VIDEO_DIR="cypress/videos"
+          VIDEO_LIMIT=100
+
+          if [ -d "$VIDEO_DIR" ]; then
+            VIDEO_COUNT=$(find "$VIDEO_DIR" -type f | wc -l)
+
+            echo "Número de vídeos na pasta: $VIDEO_COUNT"
+
+            if [ $VIDEO_COUNT -gt $VIDEO_LIMIT ]; then
+              FILES_TO_DELETE=$(find "$VIDEO_DIR" -type f -print0 | xargs -0 ls -t | tail -n +$(($VIDEO_LIMIT + 1)))
+
+              for FILE in $FILES_TO_DELETE; do
+                echo "Deleting video $FILE due to video limit"
+                rm "$FILE"
+              done
+            else
+              echo "Número de vídeos está dentro do limite."
+            fi
+          else
+            echo "Pasta $VIDEO_DIR não encontrada."
+          fi
