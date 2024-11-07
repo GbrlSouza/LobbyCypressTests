@@ -139,22 +139,24 @@ jobs:
             echo "Pasta $VIDEO_DIR não encontrada."
           fi
 
-      - name: Generate Success Report
+      - name: Generate Cypress Success Report
         if: success()
         run: |
           echo "Todos os testes Cypress passaram com sucesso em $(date)" > cypress-success-report.txt
-          echo "" >> cypress-success-report.txt
-          echo "Detalhes dos Testes:" >> cypress-success-report.txt
-          
+          echo "\nComando de Execução: npm run test\n" >> cypress-success-report.txt
+          echo "Detalhes da Execução:\n" >> cypress-success-report.txt
+          cat cypress-output.txt >> cypress-success-report.txt
+
           if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports)" ]; then
+            echo "\nRelatório de Testes Cypress:\n" >> cypress-success-report.txt
             cat cypress/reports/*.json >> cypress-success-report.txt
           else
             echo "Nenhum relatório de teste Cypress foi encontrado" >> cypress-success-report.txt
           fi
   
-      - name: Upload Success Report
+      - name: Upload Cypress Success Report
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: cypress-success-report
           path: cypress-success-report.txt
