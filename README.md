@@ -32,7 +32,7 @@ Este projeto utiliza o framework de testes E2E (End-to-End) Cypress para verific
 2. Acesse o diretório do projeto:
 
    ```bash
-   cd LobCypressTests
+   cd LobCypressTestsLocalHost
    ```
 
 3. Instale as dependências:
