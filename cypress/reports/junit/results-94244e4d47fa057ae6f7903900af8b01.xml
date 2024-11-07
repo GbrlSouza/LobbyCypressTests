@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="3.369" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2024-11-07T18:45:52" tests="0" file="cypress\e2e\2-advanced-examples\aliasing.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Aliasing" timestamp="2024-11-07T18:45:52" tests="2" time="3.364" failures="0">
+    <testcase name="Aliasing .as() - alias a DOM element for later use" time="0.669" classname=".as() - alias a DOM element for later use">
+    </testcase>
+    <testcase name="Aliasing .as() - alias a route for later use" time="1.242" classname=".as() - alias a route for later use">
+    </testcase>
+  </testsuite>
+</testsuites>
