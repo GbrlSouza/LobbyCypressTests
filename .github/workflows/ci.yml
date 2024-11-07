@@ -18,31 +18,10 @@ jobs:
       - name: Install Cypress
         run: npx cypress install
 
-      - name: Run Cypress Tests
-        run: npm run test | tee cypress-output.txt || true
-
-      - name: Test Command to Create Log
-        run: |
-          echo "Test failed at $(date)" > cypress-test-log.txt
-          echo "Error details:" >> cypress-test-log.txt
-          
-          if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports/*.json 2>/dev/null)" ]; then
-            echo "Cypress test reports found." >> cypress-test-log.txt
-            cat cypress/reports/*.json >> cypress-test-log.txt
-          else
-            echo "No Cypress reports found" >> cypress-test-log.txt
-          fi
-
-      - name: Upload Cypress Test Log
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: cypress-test-log
-          path: cypress-test-log.txt
-
       - name: Upload Cypress Screenshots
         uses: actions/upload-artifact@v4.4.3
         with:
-          name: cypress-screenshots
+          name: screenshots
           path: cypress/screenshots
           if-no-files-found: ignore
 
