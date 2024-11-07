@@ -26,7 +26,8 @@ jobs:
           echo "Test failed at $(date)" > cypress-test-log.txt
           echo "Error details:" >> cypress-test-log.txt
           
-          if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports)" ]; then
+          if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports/*.json 2>/dev/null)" ]; then
+            echo "Cypress test reports found." >> cypress-test-log.txt
             cat cypress/reports/*.json >> cypress-test-log.txt
           else
             echo "No Cypress reports found" >> cypress-test-log.txt
