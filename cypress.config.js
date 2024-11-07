@@ -22,6 +22,7 @@ module.exports = defineConfig({
   chromeWebSecurity: false,
 
   e2e: {
+    video: true,
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on)
       // implement node event listeners here
