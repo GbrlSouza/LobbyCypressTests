@@ -19,7 +19,7 @@ jobs:
         run: npx cypress install
 
       - name: Run Cypress Tests
-        run: npm run test       
+        run: npm run test | tee cypress-output.txt || true
 
       - name: Test Command to Create Log
         run: |
@@ -145,7 +145,12 @@ jobs:
           echo "Todos os testes Cypress passaram com sucesso em $(date)" > cypress-success-report.txt
           echo "\nComando de Execução: npm run test\n" >> cypress-success-report.txt
           echo "Detalhes da Execução:\n" >> cypress-success-report.txt
-          cat cypress-output.txt >> cypress-success-report.txt
+          
+          if [ -f cypress-output.txt ]; then
+            cat cypress-output.txt >> cypress-success-report.txt
+          else
+            echo "Arquivo cypress-output.txt não encontrado." >> cypress-success-report.txt
+          fi
 
           if [ -d "cypress/reports" ] && [ "$(ls -A cypress/reports)" ]; then
             echo "\nRelatório de Testes Cypress:\n" >> cypress-success-report.txt
